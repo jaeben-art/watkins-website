@@ -1,0 +1,12 @@
+﻿[build]
+  publish = "."
+
+[[redirects]]
+  from = "/trips/*"
+  to = "/trip.html"
+  status = 200
+
+[[redirects]]
+  from = "/contact-us"
+  to = "/contact/"
+  status = 301

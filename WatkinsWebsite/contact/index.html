@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact | Watkins Shared Adventures</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">Watkins Shared Adventures</a>
+      <nav class="site-nav">
+        <a href="/trips/">Bus Trips</a>
+        <a href="/happy-travelers/">Photo Gallery</a>
+        <a href="/faq/">FAQ</a>
+        <a href="/contact/">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="section">
+        <h1>Get in Touch</h1>
+        <p class="prose">Send us a message using the form below and our team will get back to you.</p>
+        <div class="contact-widget-wrap">
+          <iframe
+            height="674"
+            frameborder="0"
+            src="https://www.wetravel.com/widgets/contact_form?buttonColor=%25234a90e2&buttonTextColor=%23ffffff&version=v0.1&env=https%3A%2F%2Fwww.wetravel.com&messageTitle=How%20can%20we%20help%20you%3F&title=Contact%20us&showPhone=true&organizerId=2100119"
+            style="width: 100%"
+            id="wetravel-contact-us-widget"
+            title="WeTravel contact form"
+          ></iframe>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>&copy; <span id="year"></span> Watkins Shared Adventures</p>
+      <p class="footer-link"><a href="/privacy/">Privacy Policy</a> | <a href="/terms/">Terms &amp; Conditions</a></p>
+    </footer>
+
+    <script type="module">import { setFooterYear } from "/assets/js/site.js"; setFooterYear();</script>
+  </body>
+</html>
