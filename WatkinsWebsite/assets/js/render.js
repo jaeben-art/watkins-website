@@ -17,7 +17,7 @@ export function renderTripCard(trip) {
       ${imageHtml}
       <div class="trip-body">
         <h3>${escapeHtml(trip.title || "Upcoming Adventure")}</h3>
-        <p class="trip-meta">${escapeHtml(formatDateRange(trip.start_date, trip.end_date))}</p>
+        <p class="trip-meta">${escapeHtml(formatDateRange(trip.start_date, trip.end_date, trip.status))}</p>
         <p class="prose">${escapeHtml(toSnippet(description, 190))}</p>
         ${status ? `<span class="status-pill ${statusClass}">${escapeHtml(status)}</span>` : ""}
         <p><a class="button button-secondary" href="${detailHref}">More Info</a></p>
@@ -163,6 +163,7 @@ export function escapeHtml(value) {
 function statusToClass(status) {
   const key = String(status || "").toLowerCase();
   if (key.includes("sold")) return "is-soldout";
+  if (key.includes("day trip")) return "is-daytrip";
   if (key.includes("plan") || key.includes("wait")) return "is-planning";
   return "";
 }
@@ -171,9 +172,12 @@ function statusToClass(status) {
 function getDisplayStatus(status) {
   const key = String(status || "").toLowerCase();
   if (key.includes("sold")) return "Sold Out";
+  if (key.includes("daytrip")) return "Day Trip";
   if (key.includes("active")) return "Active";
   return "";
-}function toSnippet(text, maxLength) {
+}
+
+function toSnippet(text, maxLength) {
   const normalized = String(text || "").replace(/\s+/g, " ").trim();
   if (!normalized) return "";
   if (normalized.length <= maxLength) return normalized;

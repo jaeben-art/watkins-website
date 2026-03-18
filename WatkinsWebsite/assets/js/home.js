@@ -9,6 +9,22 @@ function isFeaturedEligible(trip) {
   return true;
 }
 
+function getDisplayStatus(status) {
+  const key = String(status || "").toLowerCase();
+  if (key.includes("sold")) return "Sold Out";
+  if (key.includes("daytrip")) return "Day Trip";
+  if (key.includes("active")) return "Active";
+  return String(status || "").trim();
+}
+
+function statusToClass(status) {
+  const key = String(status || "").toLowerCase();
+  if (key.includes("sold")) return "is-soldout";
+  if (key.includes("day trip")) return "is-daytrip";
+  if (key.includes("plan") || key.includes("wait")) return "is-planning";
+  return "";
+}
+
 function renderFeaturedTripLoading(container) {
   container.innerHTML = `
     <article class="featured-trip loading-card" aria-hidden="true">
@@ -45,6 +61,8 @@ function renderFeaturedTrip(container, trip) {
   const detailTripId = encodeURIComponent(String(trip.trip_id || "").trim());
   const detailTitle = encodeURIComponent(String(trip.title || "").trim());
   const detailHref = `/trip/?slug=${encodeURIComponent(detailSlug)}&tripId=${detailTripId}&title=${detailTitle}`;
+  const displayStatus = getDisplayStatus(trip.status);
+  const statusClass = statusToClass(displayStatus);
 
   container.innerHTML = `
     <article class="featured-trip">
@@ -60,8 +78,8 @@ function renderFeaturedTrip(container, trip) {
       <div class="featured-trip-content">
         <p class="eyebrow">Featured Trip</p>
         <h3>${escapeHtml(trip.title || "Upcoming Adventure")}</h3>
-        <p class="trip-meta">${escapeHtml(formatDateRange(trip.start_date, trip.end_date))}</p>
-        ${trip.status ? `<span class="status-pill">${escapeHtml(trip.status)}</span>` : ""}
+        <p class="trip-meta">${escapeHtml(formatDateRange(trip.start_date, trip.end_date, trip.status))}</p>
+        ${displayStatus ? `<span class="status-pill ${statusClass}">${escapeHtml(displayStatus)}</span>` : ""}
         <p class="prose">${escapeHtml(detailText)}</p>
         <ul class="tag-list">${activitiesHtml}</ul>
         <p><a class="button" href="${detailHref}">View Full Trip Details</a></p>

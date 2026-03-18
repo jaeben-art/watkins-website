@@ -1,5 +1,5 @@
 const DEFAULT_BASE_EXEC_URL =
-  "https://script.google.com/macros/s/AKfycbyhN714Snq07e1ztGFDvsimlCkcO-W5TVOQxF-fz9xM2x7EQVomr84CAqDs07ZfdFwY/exec";
+  "https://script.google.com/macros/s/AKfycbwaqdkZ_BRa-0SIb74hDITNkv45KlwXJQZgBwnL-AQGKC4wz7Omy4ZqgVQL_VXdj7ME/exec";
 const DEFAULT_BOOKING_UID = "2100119";
 
 const runtimeConfig = window.WSA_SITE_CONFIG || {};
@@ -309,9 +309,12 @@ export function toSlug(input) {
     .replace(/^-+|-+$/g, "");
 }
 
-export function formatDateRange(startDate, endDate) {
+export function formatDateRange(startDate, endDate, status = "") {
   const start = toPrettyDate(startDate);
   const end = toPrettyDate(endDate);
+  const statusKey = String(status || "").trim().toUpperCase();
+
+  if (statusKey === "DAYTRIP") return start || end || "Date coming soon";
 
   if (start && end) return `${start} - ${end}`;
   return start || end || "Dates coming soon";

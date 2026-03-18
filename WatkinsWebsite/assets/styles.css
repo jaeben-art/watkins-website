@@ -305,6 +305,11 @@ h3 {
   color: #8f2c2c;
 }
 
+.status-pill.is-daytrip {
+  background: #fff4df;
+  color: #92400e;
+}
+
 .status-pill.is-planning {
   background: #fff4df;
   color: #916209;

@@ -25,6 +25,7 @@ function buildBookingHtml(trip) {
   const hasUuid = Boolean(trip.booking_uuid);
   const isSoldOut = !trip.can_book;
   const isActive = String(trip.status || "").trim().toUpperCase() === "ACTIVE";
+  const isDayTrip = String(trip.status || "").trim().toUpperCase() === "DAYTRIP";
   const itineraryUrl = pickDocumentLink(trip.document_links || trip.document_link || trip.documents_link);
 
   if (!hasUuid && !itineraryUrl) {
@@ -48,7 +49,7 @@ function buildBookingHtml(trip) {
         ? `<a class="trip-action-button" href="${escapeHtml(bookingFallbackUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(trip.booking_button_text || "Book Now")}</a>`
         : "";
 
-  const brochureButtonHtml = hasUuid
+  const brochureButtonHtml = hasUuid && !isDayTrip
     ? `<a class="trip-action-button" href="${escapeHtml(brochureFallbackUrl)}" target="_blank" rel="noopener noreferrer">Download Brochure</a>`
     : "";
 
@@ -132,11 +133,40 @@ function renderTripDetails(container, trip) {
   const doubleOccupancyPrice = formatDoubleOccupancyPrice(trip.price);
   const gallery = Array.isArray(trip.gallery_image_url) ? trip.gallery_image_url : [];
   const activities = Array.isArray(trip.activities_overview) ? trip.activities_overview : [];
-  const isActiveTrip = String(trip.status || "").trim().toUpperCase() === "ACTIVE";
+  const statusKey = String(trip.status || "").trim().toUpperCase();
+  const isActiveTrip = statusKey === "ACTIVE";
+  const isDayTrip = statusKey === "DAYTRIP";
   const notes = [
     ...normalizeNotes(trip.important_notes),
     ...(isActiveTrip ? normalizeNotes(trip.active_notes) : []),
   ];
+  const statusLabel = isDayTrip ? "Day Trip" : isActiveTrip ? "Leaving Soon!" : statusKey.includes("SOLD") ? "Sold Out" : "";
+  const statusClass = isDayTrip ? "is-daytrip" : statusKey.includes("SOLD") ? "is-soldout" : "";
+  const pricingNote = isDayTrip
+    ? "Full payment is due at sign up and is non-refundable."
+    : "*Price shown is for double occupancy.";
+  const paymentInfoHtml = isDayTrip
+    ? `<p class="prose"><strong>Full Payment:</strong> Due at sign up and non-refundable.</p>`
+    : `<p class="prose"><strong>Final Payment Due:</strong> ${escapeHtml(finalDue)}</p>`;
+  const depositInfoHtml = isDayTrip
+    ? ""
+    : `<p class="prose">
+               Your deposit holds your seat on any of our trips. Please send your deposit as soon as possible.
+             </p>`;
+  const insuranceInfoHtml = isDayTrip
+    ? ""
+    : `<p class="prose">
+              Travel insurance information for Diamond Tours can be purchased through
+              <a href="https://travelconfident.com" target="_blank" rel="noopener noreferrer">Travel Confident</a>.
+              Please check their website for pricing and other information. Insurance can only be purchased through the website.
+            </p>`;
+  const checkPaymentHtml = isDayTrip
+    ? `<p class="prose">
+              To pay by check, make it payable to Jesse Watkins and mail it to Watkins Shared Adventures, 215 N 4th St, Cannelton, IN 47520.
+            </p>`
+    : `<p class="prose">
+              To pay with check, make it payable to Diamond Tours and mail them to Watkins Shared Adventures, 215 N 4th St, Cannelton, IN 47520.
+            </p>`;
 
   const hasGalleryFolder = Boolean(String(trip.gallery_folder_url || "").trim());
   const isGalleryLoading = trip.gallery_is_loading === true;
@@ -181,7 +211,8 @@ function renderTripDetails(container, trip) {
       <div class="trip-layout">
         <div class="stack">
           <article class="card" style="padding:16px;">
-            <h2>${escapeHtml(formatDateRange(trip.start_date, trip.end_date))}</h2>
+            <h2>${escapeHtml(formatDateRange(trip.start_date, trip.end_date, trip.status))}</h2>
+            ${statusLabel ? `<p><span class="status-pill ${statusClass}">${escapeHtml(statusLabel)}</span></p>` : ""}
             <p class="prose">${escapeHtml(detailText)}</p>
           </article>
           <article class="card" style="padding:16px;">
@@ -190,20 +221,12 @@ function renderTripDetails(container, trip) {
           </article>
           <article class="card" style="padding:16px;">
             <h2>Important Info</h2>
-            <p class="prose"><strong>Final Payment Due:</strong> ${escapeHtml(finalDue)}</p>
+            ${paymentInfoHtml}
             ${notesInlineHtml}
-            <p class="prose">
-              Travel insurance information for Diamond Tours can be purchased through
-              <a href="https://travelconfident.com" target="_blank" rel="noopener noreferrer">Travel Confident</a>.
-              Please check their website for pricing and other information. Insurance can only be purchased through the website.
-            </p>
-            <p class="prose">
-              Your deposit holds your seat on any of our trips. Please send your deposit as soon as possible.
-            </p>
-            <p class="prose">
-              To pay with check, make it payable to Diamond Tours and mail them to Watkins Shared Adventures, 215 N 4th St, Cannelton, IN 47520.
-            </p>
-            <p class="prose muted"><em>*Price shown is for double occupancy.</em></p>
+            ${insuranceInfoHtml}
+            ${depositInfoHtml}
+            ${checkPaymentHtml}
+            <p class="prose muted"><em>${escapeHtml(pricingNote)}</em></p>
           </article>
         </div>
         <aside class="stack">
